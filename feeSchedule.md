@@ -46,6 +46,7 @@ This will change before MVP
 |-------------|------|
 |call         | 1    |
 |call_indirect| 1    |
+|call_import  | 1    |
 
 ## Constants
 |Opcode     |Price |
