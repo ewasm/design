@@ -6,6 +6,8 @@ The eWASM Contract Interface (ECI) specifies the structure of a contract module.
 
 Every contract must be stored in the [WebAssembly Binary Encoding](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md) format (in short, WASM bytecode).
 
+The WASM bytecode must be prefixed with an invalid EVM1 opcode (`0xEF`).
+
 ### Imports
 
 A contract can only import symbols specified in the [Ethereum Environment Interface](./eth_interface.md).

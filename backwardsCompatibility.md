@@ -14,7 +14,9 @@ cost. The fee schedule for eWASM is yet to be specified.
 ## Identification of code
 We assume there is some sort of code handler function that all clients have 
 implemented. The code handler identifies the instruction set type by whether it
-starts with WASM's magic number or not.
+starts with the *eWASM preamble* or not.
+
+The *eWASM preamble* consists of an invalid EVM1 opcode (`0xEF`) followed by the WASM magic number.
 
 The WASM magic number is the following byte sequence: `0x00, 0x61, 0x73, 0x6d`.
 
