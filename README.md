@@ -19,6 +19,7 @@ A few key points:
 eWASM is a restricted subset of WASM to be used for contracts in Ethereum.
 
 eWASM:
+* specifies the [VM semantics](./vm_semantics.md)
 * specifies the [semantics for an *eWASM contract*](./contract_interface.md)
 * specifies an [Ethereum environment interface](./eth_interface.md) to facilitate interaction with the Ethereum environment from an *eWASM contract*
 * specifies [system contracts](./system_contracts.md)
@@ -48,6 +49,7 @@ eWASM:
 
 * [FAQ](./faq.md)
 * [Rationale](./rationale.md)
+* [VM semantics](./vm_semantics.md)
 * [Ethereum environment interface](./eth_interface.md)
 * [eWASM Contract Interface](./contract_interface.md)
 * [System contracts](./system_contracts.md)
