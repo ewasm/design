@@ -60,6 +60,7 @@ The `<callState>` sub-configuration can be saved/restored when needed between ca
         <callState>
           <callDepth>  0     </callDepth>
           <returnData> .List </returnData>
+          <static>     false </static>
 
           <acct>      0        </acct>      // I_a
           <program>   .Program </program>   // I_b
