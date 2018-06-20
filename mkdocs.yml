@@ -1,0 +1,3 @@
+site_name: Ethereum flavoured WebAssembly
+docs_dir: .
+site_dir: rendered
