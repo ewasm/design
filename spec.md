@@ -5,17 +5,20 @@ Introduction
 ------------
 
 This document aims to specify an ewasm VM in a way useful to contract writers and VM implementers.
-To this end, multiple things are specified:
-
--   The extra state that a VM needs to have around to successfully respond to calls into the EEI.
--   The EEI (Ethereum Environment Interface), currently specified loosely [here](eth_interface.md).
 
 ### Terminology
 
 **EEI**: The *Ethereum Environment Interface* refers to the layer between the Ethereum Client code and the execution engine.
-         **TODO**: Is *EEI* the right term to use?
 
-**Ethereum Client**: Code which can interact with the blockchain (read/validate and sending transactions).
+**EEI method**: A method exposed by the Ethereum Client to the execution engine for interacting with the blockchain state.
+
+**EEI namespace**: Named subset of the available EEI methods for specifying which blockchain state interactions are available to an execution engine.
+
+**Ethereum Client**: Code which can interact with the blockchain (read/validate and broadcasting transactions).
+
+**EVMC**: The *Ethereum Virtual Machine Connector* (correct name?) refers to one of (**TODO: Which one?**):
+          -   The C++ header file specifying the EEI.
+          -   The execution engine side of the EEI.
 
 **execution engine**: The underlying "hardware" of the VM, implementing the basic computational functions.
 
