@@ -43,7 +43,7 @@ The default/initial values of the cells are provided along with the declaration 
 In the texual rules below, we'll refer to cells by accesing subcells with the `.` operator.
 For example, we would access contents of the `statusCode` cell with `eei.statusCode`.
 For cells that contain elements of K builtin sorts `Map`, `List`, and `Set`, we'll use standard K operators for referring to their contents.
-For example, we can access the third element of the `returnData` cell's list using `eei.callState.returnData[2]`.
+For example, we can access the third element of the `returnData` cell's list using `eei.returnData[2]`.
 
 For some cells, we have comments following the cell declarations with the name the [Yellow Paper] gives to that element of the state.
 
@@ -52,24 +52,24 @@ For some cells, we have comments following the cell declarations with the name t
       <k> $PGM:EthereumSimulation </k>
       <eei>
         <statusCode> .StatusCode </statusCode>
+        <returnData> .List       </returnData>
 ```
 
 The `<callState>` sub-configuration can be saved/restored when needed between calls.
+When stored, it's stored in the `<callStack>` cell as a list.
 
 ```k
         <callState>
-          <callDepth>  0     </callDepth>
-          <returnData> .List </returnData>
-
+          <callDepth> 0        </callDepth>
           <acct>      0        </acct>      // I_a
           <program>   .Program </program>   // I_b
           <caller>    0        </caller>    // I_s
           <callData>  .List    </callData>  // I_d
           <callValue> 0        </callValue> // I_v
-
-          <gas>        0 </gas>        // \mu_g
-          <memoryUsed> 0 </memoryUsed> // \mu_i
+          <gas>       0        </gas>       // \mu_g
         </callState>
+
+        <callStack> .List </callStack>
 ```
 
 The execution `<substate>` keeps track of the self-destruct set, the log, and accumulated gas refund.
@@ -86,6 +86,8 @@ The `<accounts>` sub-configuration stores information about each account on the 
 The `multiplicity="*"` allows us to have multiple accounts simultaneously, and `type="Map"` allows us to access accounts by using the `<id>` as a key.
 For example, `eei.accounts[0x0001].nonce` would access the nonce of account `0x0001`.
 
+Similar to the `<callState>`, the an `<account>` state can be saved or restored on the `<accountStack>` cell.
+
 ```k
         <accounts>
           <account multiplicity="*" type="Map">
@@ -96,6 +98,8 @@ For example, `eei.accounts[0x0001].nonce` would access the nonce of account `0x0
             <nonce>   0        </nonce>
           </account>
         </accounts>
+
+        <accountsStack> .List </accountsStack>
 ```
 
 Transaction state `<tx>`:
@@ -192,6 +196,17 @@ The following codes all indicate that the VM ended execution with an exception, 
                                    | "EVMC_PRECOMPILE_FAILURE"
 ```
 
+The following are status codes used to report network state failures to the EVM from the client.
+These are not present in the [EVM-C API].
+
+-   `EVMC_ACCOUNT_ALREADY_EXISTS` indicates that a newly created account already exists.
+-   `EVMC_BALANCE_UNDERFLOW` indicates an attempt to create an account which already exists.
+
+```k
+    syntax ExceptionalStatusCode ::= "EVMC_ACCOUNT_ALREADY_EXISTS"
+                                   | "EVMC_BALANCE_UNDERFLOW"
+```
+
 ### Ending Codes
 
 These additional status codes indicate that execution has ended in some non-exceptional way.
@@ -232,6 +247,145 @@ The semantics are provided in three forms:
 2.  a list of steps that must be taken, and
 
 3.  a set K rules specifying the state update that can happen.
+
+### EEI Internal Helpers
+
+These methods are used by the other EEI methods as helpers and intermediates to perform larger more complex tasks.
+They are for the most part not intended to be exposed to the execution engine or Ethereum client for direct usage.
+
+**TODO**: `{push,pop,drop}Accounts` should be able to take a specific list of accounts to push/pop/drop, making them more efficient.
+
+#### `EEI.pushCallState`
+
+Saves a copy of the current call state in the `<callStack>`.
+
+1.  Load the current `CALLSTATE` from `eei.callState`.
+
+2.  Prepend `CALLSTATE` to the `eei.callStack`.
+
+```k
+    syntax EEIMethod ::= "EEI.pushCallState"
+ // ----------------------------------------
+    rule <k> EEI.pushCallState => . ... </k>
+         <callState> CALLSTATE </callState>
+         <callStack> (.List => ListItem(CALLSTATE)) ... </callStack>
+```
+
+#### `EEI.popCallState`
+
+Restores the most recently saved `<callState>`.
+
+1.  Load the new `CALLSTATE` from `eei.callStack[0]`.
+
+2.  Remove the first element of `eei.callStack`.
+
+3.  Set `eei.callState` to `CALLSTATE`.
+
+```k
+    syntax EEIMethod ::= "EEI.popCallState"
+ // ----------------------------------------
+    rule <k> EEI.popCallState => . ... </k>
+         <callState> _ => CALLSTATE </callState>
+         <callStack> (ListItem(CALLSTATE) => .List) ... </callStack>
+```
+
+#### `EEI.dropCallState`
+
+Forgets the most recently saved `<callState>` as reverting back to it will no longer happen.
+
+1.  Remove the first element of `eei.callStack`.
+
+```k
+    syntax EEIMethod ::= "EEI.dropCallState"
+ // ----------------------------------------
+    rule <k> EEI.dropCallState => . ... </k>
+         <callStack> (ListItem(_) => .List) ... </callStack>
+```
+
+#### `EEI.pushAccounts`
+
+Saves a copy of the `<accounts>` state in the `<accountStack>` cell.
+
+1.  Load the current `ACCTDATA` from `eei.accounts`.
+
+2.  Prepend `ACCTDATA` to the `eei.accountStack`.
+
+```k
+    syntax EEIMethod ::= "EEI.pushAccount"
+ // --------------------------------------
+    rule <k> EEI.pushAccount => . ... </k>
+         <accounts> ACCTDATA </accounts>
+         <accountsStack> (.List => ListItem(ACCTDATA)) ... </accountsStack>
+```
+
+#### `EEI.popAccounts`
+
+Restores the most recently saved `<accounts>` state.
+
+1.  Load the new `ACCTDATA` from `eei.accountsStack[0]`.
+
+2.  Remove the first element of `eei.accountsStack`.
+
+3.  Set `eei.accounts` to `ACCTDATA`.
+
+```k
+    syntax EEIMethod ::= "EEI.popAccounts"
+ // --------------------------------------
+    rule <k> EEI.popAccounts => . ... </k>
+         <accounts> _ => ACCTDATA </accounts>
+         <accountsStack> (ListItem(ACCTDATA) => .List) ... </accountsStack>
+```
+
+#### `EEI.dropAccounts`
+
+Forgets the most recently saved `<accounts>` state as reverting back to it will no longer happen.
+
+1.  Remove the first element of `eei.accountsStack`.
+
+```k
+    syntax EEIMethod ::= "EEI.dropAccounts"
+ // ---------------------------------------
+    rule <k> EEI.dropAccounts => . ... </k>
+         <accountsStack> (ListItem(_) => .List) ... </accountsStack>
+```
+
+#### `EEI.ifStatus : EthereumSimulation EthereumSimulation`
+
+If the statuscode is not exception, execute `ETHSIMULATIONGOOD`, otherwise execute `ETHSIMULATIONBAD`.
+
+1.  Load the `STATUSCODE` from `eei.statusCode`.
+
+2.  If `STATUSCODE` is not an `ExceptionalStatusCode`, then:
+
+    i.  Call `ETHSIMULATIONGOOD`.
+
+    else:
+
+    i.  Call `ETHSIMULATIONBAD`.
+
+```k
+    syntax EEIMethod ::= "EEI.ifStatus" EthereumSimulation EthereumSimulation
+ // -------------------------------------------------------------------------
+    rule <k> EEI.ifStatus ETHSIMULATIONGOOD ETHSIMULATIONBAD => ETHSIMULATIONGOOD ... </k>
+         <statusCode> STATUSCODE </statusCode>
+      requires notBool isExceptionalStatusCode(STATUSCODE)
+
+    rule <k> EEI.ifStatus ETHSIMULATIONGOOD ETHSIMULATIONBAD => ETHSIMULATIONBAD ... </k>
+         <statusCode> STATUSCODE </statusCode>
+      requires isExceptionalStatusCode(STATUSCODE)
+```
+
+#### `EEI.onGoodStatus : EthereumSimulation`
+
+Executes the given `ETHSIMULATION` if the current status code is not exceptional.
+
+1.  Call `EEI.ifStatus ETHSIMULATION .EthereumSimulation`
+
+```k
+    syntax EEIMethod ::= "EEI.onGoodStatus" EthereumSimulation
+ // ----------------------------------------------------------
+    rule <k> EEI.onGoodStatus ETHSIMULATION => EEI.ifStatus ETHSIMULATION .EthereumSimulation ... </k>
+```
 
 ### Block and Transaction Information Getters
 
@@ -286,11 +440,13 @@ If there are not `N` blocks yet, return `0`.
 
 1.  Load `BLOCKNUM` from `eei.block.number`.
 
-2.  If `N <Int 256` and `N <Int BLOCKNUM`:
+2.  If `N <Int 256` and `N <Int BLOCKNUM`, then:
 
-    i.  then: Load and return `eei.block.hashes[N]`.
+    i.  Load and return `eei.block.hashes[N]`.
 
-    ii. else: Return `0`.
+    else:
+
+    i.  Return `0`.
 
 ```k
     syntax EEIMethod ::= "EEI.getBlockHash" Int
@@ -432,7 +588,7 @@ Get the gas left available for this execution.
 
 Get the return data of the last call.
 
-1.  Load and return `eei.callState.returnData`.
+1.  Load and return `eei.returnData`.
 
 ```k
     syntax EEIMethod ::= "EEI.getReturnData"
@@ -449,11 +605,13 @@ Deduct the specified amount of gas (`GDEDUCT`) from the available gas.
 
 1.  Load the value `GAVAIL` from `eei.gas`.
 
-2.  If `GDEDUCT <Int GAVAIL`:
+2.  If `GDEDUCT <Int GAVAIL`, then:
 
-    i.  then: Set `eei.callState.gas` to `GAVAIL -Int GDEDUCT`.
+    i.  Set `eei.callState.gas` to `GAVAIL -Int GDEDUCT`.
 
-    ii. else: Set `eei.statusCode` to `EVMC_OUT_OF_GAS` and `eei.callState.gas` to `0`.
+    else:
+
+    i.  Set `eei.statusCode` to `EVMC_OUT_OF_GAS` and `eei.callState.gas` to `0`.
 
 ```k
     syntax EEIMethod ::= "EEI.useGas" Int
@@ -537,15 +695,17 @@ Return the value at the given `INDEX` in the current executing accout's storage.
 
 1.  Load `ACCT` from `eei.callState.acct`.
 
-2.  If `eei.accounts[ACCT].storage[INDEX]` exists:
+2.  If `eei.accounts[ACCT].storage[INDEX]` exists, then:
 
-    i.  then: return `eei.accounts[ACCT].storage[INDEX]`.
+    i.  Return `eei.accounts[ACCT].storage[INDEX]`.
 
-    ii. else: return `0`.
+    else:
+
+    i.  Return `0`.
 
 ```k
     syntax EEIMethod ::= "EEI.getAccountStorage" Int
- // ------------------------------------------
+ // ------------------------------------------------
     rule <k> EEI.getAccountStorage INDEX => VALUE ... </k>
          <acct> ACCT </acct>
          <account>
@@ -623,17 +783,17 @@ In any case, the status is set to `EVMC_SUCCESS`.
 
 2.  Add `ACCT` to the set `eei.substate.selfDestruct`.
 
-3.  Set `eei.callState.returnData` to `.List` (empty).
+3.  Set `eei.returnData` to `.List` (empty).
 
-4.  Load `BAL` from `eei.accounts[ACCT].balance`.
+4.  Load `BALFROM` from `eei.accounts[ACCT].balance`.
 
 5.  Set `eei.accounts[ACCT].balance` to `0`.
 
-6.  If `ACCT == ACCTTO`:
+6.  If `ACCT =/=Int ACCTTO`, then:
 
-    i.  then: skip.
+    i.  Load `BALTO` from `eei.acounts[ACCTTO].balance`.
 
-    ii. else: add `BAL` to `eei.accounts[ACCTTO].balance`.
+    ii. Set `eei.accounts[ACCTTO].balance` to `BALTO +Int BALFROM`.
 
 ```k
     syntax EEIMethod ::= "EEI.selfDestruct" Int
@@ -646,12 +806,12 @@ In any case, the status is set to `EVMC_SUCCESS`.
          <accounts>
            <account>
              <id> ACCT </id>
-             <balance> BAL => 0 </balance>
+             <balance> BALFROM => 0 </balance>
              ...
            </account>
            <account>
              <id> ACCTTO </id>
-             <balance> BALTO => BALTO +Int BAL </balance>
+             <balance> BALTO => BALTO +Int BALFROM </balance>
              ...
            </account>
            ...
@@ -666,7 +826,7 @@ In any case, the status is set to `EVMC_SUCCESS`.
          <accounts>
            <account>
              <id> ACCT </id>
-             <balance> BAL => 0 </balance>
+             <balance> BALFROM => 0 </balance>
              ...
            </account>
            ...
@@ -677,7 +837,7 @@ In any case, the status is set to `EVMC_SUCCESS`.
 
 Set the return data to the given list of `RDATA` as well setting the status code to `EVMC_SUCCESS`.
 
-1.  Set `eei.callState.returnData` to `RDATA`.
+1.  Set `eei.returnData` to `RDATA`.
 
 2.  Set `eei.statusCode` to `EVMC_SUCCESS`.
 
@@ -693,7 +853,7 @@ Set the return data to the given list of `RDATA` as well setting the status code
 
 Set the return data to the given list of `RDATA` as well setting the status code to `EVMC_REVERT`.
 
-1.  Set `eei.callState.returnData` to `RDATA`.
+1.  Set `eei.returnData` to `RDATA`.
 
 2.  Set `eei.statusCode` to `EVMC_REVERT`.
 
@@ -705,7 +865,166 @@ Set the return data to the given list of `RDATA` as well setting the status code
          <returnData> _ => RDATA </returnData>
 ```
 
-#### `EEI.call : Int ByteString ByteString`
+#### `EEI.transfer : Int Int`
+
+Transfer `VALUE` funds into account `ACCTTO`.
+
+1.  Load `ACCTFROM` from `eei.callState.acct`.
+
+2.  Load `BALFROM` from `eei.accounts[ACCTFROM].balance`.
+
+3.  If `VALUE >Int BALFROM`, then:
+
+    i.  Set `eei.statusCode` to `EVMC_BALANCE_UNDERFLOW`.
+
+    else:
+
+    i.   Set `eei.accounts[ACCTFROM].balance` to `BAL -Int VALUE`.
+
+    ii.  Load `BALTO` from `eei.accounts[ACCTTO].balance`.
+
+    iii. Set `eei.accounts[ACCTTO].balance` to `BALTO +Int VALUE`.
+
+```k
+    syntax EEIMethod ::= "EEI.transfer" Int Int
+ // -------------------------------------------
+    rule <k> EEI.transfer ACCTTO VALUE => ... </k>
+         <statusCode> _ => EVMC_BALANCE_UNDERFLOW </statusCode>
+         <acct> ACCTFROM </acct>
+         <account>
+           <id> ACCTFROM </id>
+           <balance> BALFROM </balance>
+           ...
+         </account>
+      requires VALUE >Int BALFROM
+
+    rule <k> EEI.transfer ACCTTO VALUE => ... </k>
+         <acct> ACCTFROM </acct>
+         <account>
+           <id> ACCTFROM </id>
+           <balance> BALFROM => BALFROM -Int VALUE </balance>
+           ...
+         </account>
+         <account>
+           <id> ACCTTO  </id>
+           <balance> BALTO => BALTO +Int VALUE </balance>
+           ...
+         </account>
+      requires VALUE <=Int BALFROM
+```
+
+#### `EEI.callInit : Int Int Int Int Program List`
+
+Helper for setting up the execution engine to run a specific program as if called by `ACCTFROM` into `ACCTTO`, with apparent value transfer `APPVALUE`, gas allocation `GAVAIL`, program `CODE`, and arguments `ARGS`.
+
+1.  Load `CALLDEPTH` from `eei.callState.callDepth`.
+
+2.  Set `eei.callState.callDepth` to `CALLDEPTH +Int 1`.
+
+3.  Set `eei.callState.caller` to `ACCTFROM`.
+
+4.  Set `eei.callState.acct` to `ACCTTO`.
+
+5.  Set `eei.callState.callValue` to `APPVALUE`.
+
+6.  Set `eei.callState.gas` to `GAVAIL`.
+
+7.  Set `eei.callState.program` to `CODE`.
+
+8.  Set `eei.callState.callData` to `ARGS`.
+
+9.  Set `eei.returnData` to the empty `.List`.
+
+```k
+    syntax EEIMethod ::= "EEI.callInit" Int Int Int Int Program List
+ // ----------------------------------------------------------------
+    rule <k> EEI.callInit ACCTFROM ACCTTO APPVALUE GAVAIL CODE ARGS => . ... </k>
+         <callState>
+           <callDepth>  CALLDEPTH => CALLDEPTH +Int 1 </callDepth>
+           <caller>     _         => ACCTFROM         </caller>
+           <acct>       _         => ACCTTO           </acct>
+           <callValue>  _         => APPVALUE         </callValue>
+           <gas>        _         => GAVAIL           </gas>
+           <program>    _         => CODE             </program>
+           <callData>   _         => ARGS             </callData>
+         </callState>
+```
+
+#### `EEI.call : Int Int Int List`
+
+**TODO**: Parameterize the `1024` max call depth.
+
+Call into account `ACCTTO`, with gas allocation `GAVAIL`, apparent value `APPVALUE`, and arguments `ARGS`.
+
+1.  Load `CALLDEPTH` from `eei.callState.callDepth`.
+
+2.  If `CALLDEPTH >=Int 1024`, then:
+
+    i.  Set `eei.statusCode` to `EVMC_CALL_DEPTH_EXCEEDED`.
+
+    else:
+
+    i.    Load `CODE` from `eei.accountss[ACCTTO].code`.
+
+    ii.   Load `ACCTFROM` from `eei.callState.acct`.
+
+    iii.  Call `EEI.pushCallState`.
+
+    iv.   Call `EEI.pushAccounts`.
+
+    vi.   Call `EEI.callInit ACCTFROM ACCTTO APPVALUE GAVAIL CODE ARGS`
+
+    vii.  Call `EEI.execute`.
+
+    viii. Call `EEI.popCallState`.
+
+    viii. Call `EEI.ifStatus EEI.dropAccounts EEI.popAccounts`.
+
+    iv.   Call `EEI.execute`.
+
+```k
+    syntax EEIMethod ::= "EEI.call" Int Int Int List
+ // ------------------------------------------------
+    rule <k> EEI.call ACCTTO GAVAIL APPVALUE ARGS => . ... </k>
+         <statusCode> _ => EVMC_CALL_DEPTH_EXCEEDED </statusCode>
+         <callDepth> CALLDEPTH </callDepth>
+      requires CALLDEPTH >=Int 1024
+
+    rule <k> EEI.call ACCTTO GAVAIL APPVALUE ARGS
+          => EEI.pushCallState ~> EEI.pushAccounts
+          ~> EEI.initCallState ACCTFROM ACCTTO APPVALUE GAVAIL CODE ARGS
+          ~> EEI.execute
+          ~> EEI.callFinish
+          ~> EEI.execute
+         ...
+         </k>
+         <acct> ACCTFROM </acct>
+         <callDepth> CALLDEPTH </callDepth>
+         <account>
+           <id> ACCTTO </id>
+           <code> CODE </code>
+           ...
+         </account>
+      requires CALLDEPTH <Int 1024
+```
+
+#### `EEI.transferCall : Int Int Int List`
+
+Call into account `ACCTTO`, transfering value `VALUE`, with gas allocation `GAVAIL`, and arguments `ARGS`.
+
+1.  Call `EEI.transfer VALUE ACCT`.
+
+2.  Call `EEI.onGoodStatus (EEI.call ACCTTO VALUE GAVAIL ARGS)`.
+
+```k
+    syntax EEIMethod ::= "EEI.transferCall" Int Int Int List
+ // --------------------------------------------------------
+    rule <k> EEI.transferCall ACCTTO VALUE GAVAIL ARGS
+          => EEI.transfer VALUE ACCTTO
+          ~> EEI.onGoodStatus (EEI.call ACCTTO VALUE GAVAIL ARGS)
+         ...
+         </k>
+```
 
 -   `EEI.call` **TODO**
 -   `EEI.callCode` **TODO**
