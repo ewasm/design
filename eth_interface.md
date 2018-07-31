@@ -450,12 +450,12 @@ from last executed `call`, `callCode`, `callDelegate`, `callStatic` or `create`.
 
 ## selfDestruct
 
-Mark account for later deletion and give the remaining balance to the specified
-beneficiary address. This will cause a trap and the execution will be aborted immediately.
+Mark account for later deletion.
+This will cause a trap and the execution will be aborted immediately.
 
 **Parameters**
 
--   `addressOffset` **i32ptr** the memory offset to load the address from (`address`)
+*nothing*
 
 **Returns**
 
