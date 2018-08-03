@@ -1,6 +1,6 @@
-# Ethereum flavored WebAssembly (eWASM) Design (*Revision 3*)
+# Ethereum flavored WebAssembly (ewasm) Design (*Revision 3*)
 
-This repository contains documents describing the design and high-level overview of eWASM. Expect the contents of this repository to be in flux: everything is still under discussion.
+This repository contains documents describing the design and high-level overview of ewasm. Expect the contents of this repository to be in flux: everything is still under discussion.
 
 ## What is WebAssembly?
 
@@ -26,36 +26,36 @@ A few key points:
   [ml-proto](https://github.com/WebAssembly/spec/tree/master/ml-proto) (the
   OCaml reference interpreter), etc.
 
-## What is Ethereum flavored WebAssembly (eWASM)?
+## What is Ethereum flavored WebAssembly (ewasm)?
 
-eWASM is a restricted subset of WASM to be used for contracts in Ethereum.
+ewasm is a restricted subset of WASM to be used for contracts in Ethereum.
 
-eWASM:
+ewasm:
 * specifies the [VM semantics](./vm_semantics.md)
-* specifies the [semantics for an *eWASM contract*](./contract_interface.md)
-* specifies an [Ethereum environment interface](./eth_interface.md) to facilitate interaction with the Ethereum environment from an *eWASM contract*
+* specifies the [semantics for an *ewasm contract*](./contract_interface.md)
+* specifies an [Ethereum environment interface](./eth_interface.md) to facilitate interaction with the Ethereum environment from an *ewasm contract*
 * specifies [system contracts](./system_contracts.md)
 * specifies [metering](./metering.md) for instructions
 * and aims to restrict [non-deterministic behavior](https://github.com/WebAssembly/design/blob/master/Nondeterminism.md)
 * specifies a backwards compatible upgrade path to EVM1
 
-### Goals of the eWASM project
+### Goals of the ewasm project
 
-* To provide a specification of *eWASM contract* semantics and the *Ethereum interface*
-* To provide an *EVM transpiler*, preferably as an eWASM contract
-* To provide a *metering injector*, preferably as an eWASM contract
-* To provide a VM implementation for executing eWASM contracts
-* To implement an eWASM backend in the Solidity compiler
+* To provide a specification of *ewasm contract* semantics and the *Ethereum interface*
+* To provide an *EVM transpiler*, preferably as an ewasm contract
+* To provide a *metering injector*, preferably as an ewasm contract
+* To provide a VM implementation for executing ewasm contracts
+* To implement an ewasm backend in the Solidity compiler
 * To provide a library and instructions for writing contracts in Rust
 * To provide a library and instructions for writing contracts in C
 
 ### Glossary
 
-* *eWASM contract*: a contract adhering to the eWASM specification
-* *Ethereum environment interface (EEI)*: a set of methods available to eWASM contracts
+* *Ewasm contract*: a contract adhering to the ewasm specification
+* *Ethereum environment interface (EEI)*: a set of methods available to ewasm contracts
 * *metering*: the act of measuring execution cost in a deterministic way
-* *metering injector*: a transformation tool inserting metering code to an eWASM contract
-* *EVM transpiler*: an EVM bytecode (the current Ethereum VM) to eWASM transcompiler
+* *metering injector*: a transformation tool inserting metering code to an ewasm contract
+* *EVM transpiler*: an EVM bytecode (the current Ethereum VM) to ewasm transcompiler
 
 ### Resources
 
@@ -63,7 +63,7 @@ eWASM:
 * [Rationale](./rationale.md)
 * [VM semantics](./vm_semantics.md)
 * [Ethereum environment interface](./eth_interface.md)
-* [eWASM Contract Interface](./contract_interface.md)
+* [Ewasm Contract Interface](./contract_interface.md)
 * [System contracts](./system_contracts.md)
 * [Backwards compatibility instructions](./backwards_compatibility.md)
 * [Original Proposal](https://github.com/ethereum/EIPs/issues/48) (EIP#48)

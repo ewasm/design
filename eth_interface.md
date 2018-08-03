@@ -1,6 +1,6 @@
 # Ethereum Environment Interface (EEI) Specification (*Revision 3*)
 
-The Ethereum Environment Interface exposes the core Ethereum API to the eWASM environment. The Ethereum [module](https://github.com/WebAssembly/design/blob/master/Modules.md) will be implemented in the Ethereum client's native language. All parameters and returns are restricted to 32 or 64 bit integers. Floats are disallowed.
+The Ethereum Environment Interface exposes the core Ethereum API to the ewasm environment. The Ethereum [module](https://github.com/WebAssembly/design/blob/master/Modules.md) will be implemented in the Ethereum client's native language. All parameters and returns are restricted to 32 or 64 bit integers. Floats are disallowed.
 
 # Data types
 

@@ -1,7 +1,7 @@
-# Determining eWASM gas costs
+# Determining ewasm gas costs
 
 The goal of this document is to describe the process of determining gas costs
-for eWASM instructions.
+for ewasm instructions.
 
 Each WASM opcode is assigned an appropriate Intel IA-32 (x86) opcode (or a
 series of opcodes). These opcodes have a fixed cycle count (called *latency*
@@ -43,7 +43,7 @@ to at most 64-bits, which results in executing four instructions in the best
 case to match EVM1. Most arithmetic instructions in EVM1 cost 3 gas, which would
 amount to 0.75 gas for most 64-bit WASM instructions.
 
-Internally, eWASM gas measurements should be recorded in a 64 bit variable
+Internally, ewasm gas measurements should be recorded in a 64 bit variable
 with 4 decimal digits precision. We call this *particles*. It is a minor
 implementation detail actually using integers and converting the below gas costs
 appropriately.
@@ -310,7 +310,7 @@ Ternary operator.
 
 ### breaking out of the VM
 
-Any instruction pausing the VM and transferring data between the eWASM contract
+Any instruction pausing the VM and transferring data between the ewasm contract
 and the host is *breaking out of the VM*.
 
 These instructions include:

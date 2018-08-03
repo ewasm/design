@@ -1,11 +1,11 @@
-## Why do we want eWASM?
+## Why do we want ewasm?
 
 * Fast & Efficient: To truly distinguish Ethereum as the World Computer we need to have a very performant VM. The current architecture of the VM is one of the greatest blockers to raw performance. WebAssembly aims to execute at near native speed by taking advantage of common hardware capabilities available on a wide range of platforms. This will open the door to a wide array of uses that require performance/throughput. 
-* Security: With the add performance gains from eWASM we will be able to implement parts of Ethereum such as the precompiled contract in the VM itself which will minimize our trusted computing base.
+* Security: With the add performance gains from ewasm we will be able to implement parts of Ethereum such as the precompiled contract in the VM itself which will minimize our trusted computing base.
 Standardized Instruction Set: WebAssembly is currently being designed as an open standard by a W3C Community Group and is actively being developed by engineers from Mozilla, Google, Microsoft, and Apple.
 * Toolchain Compatibility: A LLVM front-end for WASM is part of the MVP. This will Allow developers to write contracts and reuse applications written in common languages such as C/C++, go and rust.
-* Portability: WASM is targeted to be deployed in all the major web browsers which will result in it being one of the most widely deployed VM architecture. Contracts compiled to eWASM will share compatibility with any standard WASM environment. Which will make running a program either directly on Ethereum, on a cloud hosting environment, or on one's local machine - a frictionless process.
-* Optional And Flexible Metering: Metering the VM adds overhead but is essential for running untrusted code. If code is trusted then metering maybe optional. eWASM defines metering as an optional layer to accommodate for these use cases.
+* Portability: WASM is targeted to be deployed in all the major web browsers which will result in it being one of the most widely deployed VM architecture. Contracts compiled to ewasm will share compatibility with any standard WASM environment. Which will make running a program either directly on Ethereum, on a cloud hosting environment, or on one's local machine - a frictionless process.
+* Optional And Flexible Metering: Metering the VM adds overhead but is essential for running untrusted code. If code is trusted then metering maybe optional. Ewasm defines metering as an optional layer to accommodate for these use cases.
 * Furthermore some of Wasm's top [design goals](https://github.com/WebAssembly/design/blob/master/HighLevelGoals.md) are largely applicable to Ethereum  
 
 > Define a portable, size- and load-time-efficient binary format to serve as a compilation target which can be compiled to execute at native speed by taking advantage of common hardware capabilities available on a wide range of platforms, including mobile and IoT.

@@ -1,10 +1,10 @@
 # System Contracts (Revision 0)
 
 System contracts are interfaces defined as contracts, which are essential or
-recommended for an eWASM VM.
+recommended for an ewasm VM.
 
-An eWASM VM implementation may opt to implement these interfaces natively
-or to rely on implementations written in eWASM.
+An ewasm VM implementation may opt to implement these interfaces natively
+or to rely on implementations written in ewasm.
 
 Each of these contracts have a pre defined address and can be executed through
 regular contract invocations.
@@ -13,24 +13,24 @@ regular contract invocations.
 
 Address: `0x000000000000000000000000000000000000000a`
 
-Every newly deployed eWASM contract must be processed by the *Sentinel Contract*
+Every newly deployed ewasm contract must be processed by the *Sentinel Contract*
 prior to including the code in the state. The sentinel will perform three very
 important processing steps:
-- Validate eWASM semantics
+- Validate ewasm semantics
 - Inject metering code
 - Wrap the result in the deployer preamble (*see Appendix A*)
 
 Input:
-- **variable length**: *eWASM contract code*
+- **variable length**: *ewasm contract code*
 
 Output:
-- **variable length**: *eWASM contract code*
+- **variable length**: *ewasm contract code*
 
 ## EVM Transcompiler
 
 Address: `0x000000000000000000000000000000000000000b`
 
-Transcompiles EVM1 bytecode into eWASM bytecode.
+Transcompiles EVM1 bytecode into ewasm bytecode.
 
 The use of this is optional. A compatible client may implement EVM1 natively or
 may choose to use this transcompiler.
@@ -39,14 +39,14 @@ Input:
 - **variable length**: *EVM1 contract code*
 
 Output:
-- **variable length**: *eWASM contract code*
+- **variable length**: *ewasm contract code*
 
 ## EVM Precompiled Contracts
 
 Precompiled contracts are defined for EVM1 (see the Yellow Paper). Several
 extensions have been proposed as *[Ethereum Improvement Proposals](http://github.com/ethereum/EIPs)*.
 
-We assume the contracts defined in the Yellow Paper still apply for eWASM.
+We assume the contracts defined in the Yellow Paper still apply for ewasm.
 
 ### ecrecover
 
@@ -111,11 +111,11 @@ Input:
 Output:
 - **32 bytes**: *keccak-256 hash*
 
-### Appendix A: eWASM deployer preamble
+### Appendix A: ewasm deployer preamble
 
 ```
 ;;
-;; Standard eWASM deployer code.
+;; Standard ewasm deployer code.
 ;;
 ;; We keep the to-be-deployed contract as a memory segment and simply return it.
 ;;

@@ -1,6 +1,6 @@
-# eWASM Contract Interface (ECI) Specification (*Revision 3*)
+# Ewasm Contract Interface (ECI) Specification (*Revision 3*)
 
-The eWASM Contract Interface (ECI) specifies the structure of a contract module.
+The Ewasm Contract Interface (ECI) specifies the structure of a contract module.
 
 ### Wire format
 
@@ -10,7 +10,7 @@ Every contract must be stored in the [WebAssembly Binary Encoding](https://githu
 
 A contract can only import symbols specified in the [Ethereum Environment Interface or EEI](./eth_interface.md).
 
-In practice, this means that all imports specified by an eWASM module must be from the `ethereum` namespace,
+In practice, this means that all imports specified by an ewasm module must be from the `ethereum` namespace,
 and having a function signature and name directly correspondent to a function specified in the EEI.
 
 As mentioned below, there is a `debug` namespace as well, but that is disallowed in production systems.
@@ -46,7 +46,7 @@ If it needs to abort due to a failure, an *unreachable* instruction should be ex
 
 The use of a [start function](https://webassembly.github.io/spec/core/syntax/modules.html#start-function) is disallowed.
 
-The reason for this is that an eWASM VM would need to have access to the memory space of a contract and that must be acquired prior to executing it.
+The reason for this is that an ewasm VM would need to have access to the memory space of a contract and that must be acquired prior to executing it.
 In the [WebAssembly Javascript API](https://webassembly.org/docs/js/) however the start function is executed right during instantiation, which
 leaves no time for the client to acquire the memory area.
 
