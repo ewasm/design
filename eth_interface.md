@@ -594,3 +594,20 @@ Get the block’s timestamp.
 **Returns**
 
 `blockTimestamp` **i64**
+
+## isAccountEmpty
+
+Returns 1 if account has no code, zero nonce and zero balance (as per [EIP-161](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-161.md)), and
+0 otherwise.
+
+**Parameters**
+
+-   `addressOffset` **i32ptr** the memory offset to load the address from (`address`)
+
+**Returns**
+
+`isEmpty` **i32**
+
+**Trap conditions**
+
+- load `address` from memory at `addressOffset` results in out of bounds access.
