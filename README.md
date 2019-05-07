@@ -2,20 +2,20 @@
 
 Specification **Revision 4**
 
-This repository contains documents describing the design and high-level overview of ewasm. Expect the contents of this repository to be in flux: everything is still under discussion.
+This is the master Ewasm documentation and design repository, and contains canonical information on the current state of the Ewasm project including both a high-level overview of the project, its goals, and its rationale, as well as more technical specifications, and lists of additional resources. This is the starting point for those who wish to learn more about Ewasm, to contribute to Ewasm, to build Ewasm-compatible smart contracts on Ethereum, or to implement Ewasm in a blockchain other than Ethereum.
 
 **This repository is also available through [ReadTheDocs](https://ewasm.readthedocs.io).**
 
 ## What is WebAssembly?
 
-> WebAssembly (or Wasm as a contraction) is a new, portable, size- and load-time-efficient format. WebAssembly aims to execute at native speed by taking advantage of common hardware capabilities available on a wide range of platforms. WebAssembly is currently being designed as an open standard by a W3C Community Group.
+WebAssembly (or Wasm, for short: note that the term "Wasm" is not an acronym and is therefore not written using all-caps) is a new, portable, size- and load-time-efficient bytecode format. WebAssembly aims to execute at near-native speed by taking advantage of common hardware capabilities available on a wide range of platforms. WebAssembly is currently being designed as an open standard by a W3C Community Group.
 
 Please review the [WebAssembly](http://webassembly.org/) [design](http://webassembly.org/docs/high-level-goals/) and [instruction set](https://webassembly.github.io/spec/core/appendix/index-instructions.html#index-instr) first. (You can also make a pull request or raise an issue at the [Wasm Github repo](https://github.com/WebAssembly/design).)
 
 A few key points:
-* WebAssembly defines an instruction set, intermediate source format (WAST) and a binary encoded format (WASM).
+* WebAssembly defines an instruction set, intermediate source format (Wast) and a binary encoded format (Wasm).
 * WebAssembly has a few higher level features, such as the ability to import and execute outside methods defined via an interface.
-* [LLVM](https://llvm.org/) includes a WebAssembly backend to generate WASM output.
+* [LLVM](https://llvm.org/) includes a WebAssembly backend to generate Wasm output.
 * Major browser JavaScript engines will notably have native support for
   WebAssembly, including but not limited to: Google's
   [V8](https://github.com/v8/v8) engine (Node.js and Chromium-based browsers),
@@ -30,20 +30,24 @@ A few key points:
   [ml-proto](https://github.com/WebAssembly/spec/tree/master/ml-proto) (the
   OCaml reference interpreter), etc.
 
-## What is Ethereum flavored WebAssembly (ewasm)?
+## What is Ethereum-flavored WebAssembly (Ewasm)?
 
-ewasm is a restricted subset of WASM to be used for contracts in Ethereum.
+Ewasm is a restricted subset of Wasm to be used for contracts in Ethereum.
 
-ewasm:
+Ewasm:
 * specifies the [VM semantics](./vm_semantics.md)
-* specifies the [semantics for an *ewasm contract*](./contract_interface.md)
-* specifies an [Ethereum environment interface](./eth_interface.md) to facilitate interaction with the Ethereum environment from an *ewasm contract*
+* specifies the [semantics for an *Ewasm contract*](./contract_interface.md)
+* specifies an [Ethereum environment interface](./eth_interface.md) (a.k.a., EEI methods) to facilitate interaction with the Ethereum environment from an *Ewasm contract*
 * specifies [system contracts](./system_contracts.md)
 * specifies [metering](./metering.md) for instructions
 * and aims to restrict [non-deterministic behavior](https://github.com/WebAssembly/design/blob/master/Nondeterminism.md)
 * specifies a backwards compatible upgrade path to EVM1
 
-### Goals of the ewasm project
+In short:
+
+Ewasm = Wasm - non-determinism (floating point) + metering + EEI methods
+
+### Goals of the Ewasm project
 
 * To provide a specification of *ewasm contract* semantics and the *Ethereum interface*
 * To provide an *EVM transcompiler*, preferably as an ewasm contract
@@ -87,5 +91,6 @@ ewasm:
 ### Design Process & Contributing
 For now, high-level design discussions should continue to be held in the design repository, via issues and pull requests. Feel free to file [issues](https://github.com/ethereum/ewasm-design/issues).
 
-## Chat
-[Gitter](https://gitter.im/ewasm/Lobby)  
+## Contributing
+
+The best place to start contributing to the Ewasm project is our [public Gitter channel](https://gitter.im/ewasm/Lobby). The Ewasm team hangs out in this channel and is on hand to answer questions.
