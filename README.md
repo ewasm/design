@@ -2,7 +2,7 @@
 
 Specification **Revision 4**
 
-This is the master Ewasm documentation and design repository, and contains canonical information on the current state of the Ewasm project including both a high-level overview of the project, its goals, and its rationale, as well as more technical specifications, and lists of additional resources. This is the starting point for those who wish to learn more about Ewasm, to contribute to Ewasm, to build Ewasm-compatible smart contracts on Ethereum, or to implement Ewasm in a blockchain other than Ethereum.
+This is the master Ewasm documentation and design repository and contains canonical information on the current state of the Ewasm project including a high-level overview of the project, its goals, and its rationale, as well as more technical specifications, and lists of additional resources. This is the starting point for those who wish to learn more about Ewasm, to contribute to Ewasm, to build Ewasm-compatible smart contracts on Ethereum, or to implement Ewasm in a blockchain other than Ethereum.
 
 **This repository is also available through [ReadTheDocs](https://ewasm.readthedocs.io).**
 
@@ -30,9 +30,23 @@ A few key points:
   [ml-proto](https://github.com/WebAssembly/spec/tree/master/ml-proto) (the
   OCaml reference interpreter), etc.
 
-## What is Ethereum-flavored WebAssembly (Ewasm)?
+## What is Ewasm?
 
-Ewasm is a restricted subset of Wasm to be used for contracts in Ethereum.
+The term "Ewasm" stands for "Ethereum-flavored" WebAssembly. Ewasm is a restricted subset of Wasm used for smart contracts in Ethereum, which also adds things like metering and a set of Wasm host functions to allow Wasm contracts to interact with Ethereum.
+
+### Can you explain that a bit further?
+
+Full Wasm has [four types](https://webassembly.github.io/spec/core/syntax/types.html): `i32`, `i64`, `f32`, and `f64`. Ewasm is the subset of two types: `i32` and `i64` (floats are valid types in Wasm, but invalid types in Ewasm because they can lead to [non-deterministic behavior](https://github.com/WebAssembly/design/blob/master/Nondeterminism.md)). Because Ewasm is just Wasm, Ewasm can be executed on any generic Wasm engine. Furthermore, because Ewasm is just Wasm, there is no such thing as an "Ewasm engine" or an "Ewasm VM"; these are confusing names for using a standard Wasm VM in an Ethereum client.
+
+If Ewasm is just wasm, then what does the "E" stand for? The "E" (Ethereum-flavored) stands for the Ethereum-specific *host functions* that the Ethereum client provides to the Wasm engine. A host function in Wasm would be called a Foreign Function Interface ([FFI](https://en.wikipedia.org/wiki/Foreign_function_interface)) or a "language binding" in more generic terminology. The definition of host function in the Wasm spec [begins as](https://webassembly.github.io/spec/core/exec/runtime.html#function-instances):
+
+> A *host function* is a function expressed outside WebAssembly but passed to a module as an import. The definition and behavior of host functions are outside the scope of this specification.
+
+In Wasm terminology, the program that provides host functions to the Wasm engine is called the [Embedder](https://webassembly.github.io/spec/core/intro/overview.html#embedder):
+
+> **Embedder** - A WebAssembly implementation will typically be embedded into a host environment. This environment defines how loading of modules is initiated, how imports are provided (including host-side definitions), and how exports can be accessed. However, the details of any particular embedding are beyond the scope of this specification, and will instead be provided by complementary, environment-specific API definitions.
+
+The environment-specific API definitions for Ewasm host functions is what we call the [Ethereum Environment Interface](https://github.com/ewasm/design/blob/master/eth_interface.md), or EEI (which is a [work-in-progress](https://github.com/ewasm/design/pulls), and evolving). The embedder that implements EEI methods is an Ethereum client, which  provides them as host function imports to a generic Wasm engine.  We'll also use the term "Ewasm client" (short for an Ethereum client with an embedded Wasm engine), as in "btw, does your ewasmJS client have all the EEI methods implemented yet?"
 
 Ewasm:
 * specifies the [VM semantics](./vm_semantics.md)
@@ -40,14 +54,14 @@ Ewasm:
 * specifies an [Ethereum environment interface](./eth_interface.md) (a.k.a., EEI methods) to facilitate interaction with the Ethereum environment from an *Ewasm contract*
 * specifies [system contracts](./system_contracts.md)
 * specifies [metering](./metering.md) for instructions
-* and aims to restrict [non-deterministic behavior](https://github.com/WebAssembly/design/blob/master/Nondeterminism.md)
-* specifies a backwards compatible upgrade path to EVM1
+* aims to restrict [non-deterministic behavior](https://github.com/WebAssembly/design/blob/master/Nondeterminism.md)
+* specifies a backwards-compatible upgrade path to EVM
 
 In short:
 
 Ewasm = Wasm - non-determinism (floating point) + metering + EEI methods
 
-### Goals of the Ewasm project
+## Goals of the Ewasm project
 
 * To provide a specification of *ewasm contract* semantics and the *Ethereum interface*
 * To provide an *EVM transcompiler*, preferably as an ewasm contract
@@ -57,7 +71,7 @@ Ewasm = Wasm - non-determinism (floating point) + metering + EEI methods
 * To provide a library and instructions for writing contracts in Rust
 * To provide a library and instructions for writing contracts in C
 
-### Glossary
+## Glossary
 
 * *Ewasm contract*: a contract adhering to the ewasm specification
 * *Ethereum environment interface (EEI)*: a set of methods available to ewasm contracts
@@ -65,7 +79,7 @@ Ewasm = Wasm - non-determinism (floating point) + metering + EEI methods
 * *metering injector*: a transformation tool inserting metering code to an ewasm contract
 * *EVM transcompiler*: an EVM bytecode (the current Ethereum VM) to ewasm transcompiler. [See this chapter](./evm_transcompiler.md).
 
-### Resources
+## Resources
 
 * [FAQ](./faq.md)
 * [Rationale](./rationale.md)
@@ -78,7 +92,7 @@ Ewasm = Wasm - non-determinism (floating point) + metering + EEI methods
 * [WebAssembly Specification](https://webassembly.github.io/spec/)
 * [WebAssembly design documents](https://github.com/WebAssembly/design)
 
-### Projects
+## Projects
 
 * [ewasm-tests](https://github.com/ewasm/ewasm-tests)
 * [wasm-metering](https://github.com/ewasm/wasm-metering)
@@ -88,9 +102,7 @@ Ewasm = Wasm - non-determinism (floating point) + metering + EEI methods
 * [assemblyscript-ewasm-api](https://github.com/ewasm/assemblyscript-ewasm-api)
 * [ewasm-rust-api](https://github.com/ewasm/ewasm-rust-api)
 
-### Design Process & Contributing
-For now, high-level design discussions should continue to be held in the design repository, via issues and pull requests. Feel free to file [issues](https://github.com/ethereum/ewasm-design/issues).
-
-## Contributing
+## Design Process & Contributing
+High-level design discussions should continue to be held in this repository, via issues and pull requests. Feel free to file [issues](https://github.com/ethereum/ewasm-design/issues).
 
 The best place to start contributing to the Ewasm project is our [public Gitter channel](https://gitter.im/ewasm/Lobby). The Ewasm team hangs out in this channel and is on hand to answer questions.
