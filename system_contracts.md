@@ -9,6 +9,8 @@ or to rely on implementations written in ewasm.
 Each of these contracts have a pre defined address and can be executed through
 regular contract invocations.
 
+Current revision: see [revision.md](./revision.md).
+
 ## Sentinel Contract
 
 Address: `0x000000000000000000000000000000000000000a`
