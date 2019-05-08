@@ -1,4 +1,4 @@
-# Ethereum flavored WebAssembly (ewasm)
+# Ethereum flavored WebAssembly (Ewasm)
 
 Specification **Revision 4**
 
@@ -61,23 +61,23 @@ In short:
 
 Ewasm = Wasm - non-determinism (floating point) + metering + EEI methods
 
-## Goals of the Ewasm project
+## Project goals
 
-* To provide a specification of *ewasm contract* semantics and the *Ethereum interface*
-* To provide an *EVM transcompiler*, preferably as an ewasm contract
-* To provide a *metering injector*, preferably as an ewasm contract
-* To provide a VM implementation for executing ewasm contracts
-* To implement an ewasm backend in the Solidity compiler
+* To provide a specification of *Ewasm contract* semantics and the *Ethereum interface*
+* To provide an *EVM-Ewasm transcompiler*, preferably as an Ewasm contract
+* To provide a *metering injector*, preferably as an Ewasm contract
+* To provide a VM implementation for executing Ewasm contracts
+* To implement an Ewasm backend in the Solidity compiler
 * To provide a library and instructions for writing contracts in Rust
 * To provide a library and instructions for writing contracts in C
 
 ## Glossary
 
-* *Ewasm contract*: a contract adhering to the ewasm specification
-* *Ethereum environment interface (EEI)*: a set of methods available to ewasm contracts
+* *Ewasm contract*: a contract adhering to the Ewasm specification
+* *Ethereum environment interface (EEI)*: a set of methods available to Ewasm contracts
 * *metering*: the act of measuring execution cost in a deterministic way
-* *metering injector*: a transformation tool inserting metering code to an ewasm contract
-* *EVM transcompiler*: an EVM bytecode (the current Ethereum VM) to ewasm transcompiler. [See this chapter](./evm_transcompiler.md).
+* *metering injector*: a transformation tool inserting metering code to an Ewasm contract
+* *EVM transcompiler*: an EVM bytecode (the current Ethereum VM) to Ewasm transcompiler. [See this chapter](./evm_transcompiler.md).
 
 ## Resources
 
