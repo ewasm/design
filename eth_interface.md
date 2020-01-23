@@ -207,12 +207,13 @@ value.
 
 ## storageStore
 
-Store 256-bit a value in memory to persistent storage
+Store bytes value in memory to persistent storage
 
 **Parameters**
 
 -   `pathOffset` **i32ptr** the memory offset to load the path from (`bytes32`)
--   `valueOffset` **i32ptr** the memory offset to load the value from (`bytes32`)
+-   `valueOffset` **i32ptr** the memory offset to load the value from (`bytes`)
+-   `valueLen` **i32** the length of the value
 
 **Returns**
 
@@ -225,16 +226,37 @@ Store 256-bit a value in memory to persistent storage
 
 ## storageLoad
 
-Loads a 256-bit a value to memory from persistent storage
+Loads bytes value to memory from persistent storage. No more than
+`resultMaxLength` is loaded. Returns the actual number of bytes loaded.
+Returns 0 if there is nothing stored at the path.
 
 **Parameters**
 
 -   `pathOffset` **i32ptr** the memory offset to load the path from (`bytes32`)
--   `resultOffset` **i32ptr** the memory offset to store the result at (`bytes32`)
+-   `resultOffset` **i32ptr** the memory offset to store the result at (`bytes`)
+-   `resultMaxLength` **i32** the maximum length to load
 
 **Returns**
 
-*nothing*
+- `lengthLoaded` **i32** Actual number of bytes loaded from storage
+
+**Trap conditions**
+
+- load `bytes32` from memory at `pathOffset` results in out of bounds access,
+- store `bytes32` to memory at `resultOffset` results in out of bounds access.
+
+## storageSize
+
+Returns the length of the storage at the path.
+Returns 0 if there is nothing stored at the path.
+
+**Parameters**
+
+-   `pathOffset` **i32ptr** the memory offset to load the path from (`bytes32`)
+
+**Returns**
+
+- `size` **i32** Number of bytes at the path
 
 **Trap conditions**
 
