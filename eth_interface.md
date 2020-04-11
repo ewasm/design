@@ -568,12 +568,12 @@ from last executed `call`, `callCode`, `callDelegate`, `callStatic` or `create`.
 
 ## selfDestruct
 
-Mark account for later deletion and give the remaining balance to the specified
-beneficiary address. This will cause a trap and the execution will be aborted immediately.
+Mark account for later deletion.
+This will cause a trap and the execution will be aborted immediately.
 
 **Parameters**
 
--   `addressOffset` **i32ptr** the memory offset to load the address from (`address`)
+*nothing*
 
 **Returns**
 
@@ -594,3 +594,25 @@ Get the block’s timestamp.
 **Returns**
 
 `blockTimestamp` **i64**
+
+
+## transfer
+
+Trasfers ETH from the current account to the destination address.
+When the balance of the current account is not sufficient the method ends
+with a failure.
+
+**Parameters**
+
+-   `destinationOffset` **i32ptr** the memory offset to load the destination address from (`address`)
+-   `valueOffset` **i32ptr** the memory offset to load the value from (`u128`)
+
+**Returns**
+
+`result` **i32** Returns 0 on success, 1 on failure.
+
+**Rationale**
+
+This method is added for compatibility with EVM1 where you can achieve the same
+result by using CREATE + SELFDESTRUCT combo.
+ 
