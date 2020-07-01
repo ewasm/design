@@ -20,11 +20,13 @@ We also define the following WebAssembly data types:
 
 ## useGas
 
-Subtracts an amount to the gas counter
+Reduces the gas left counter by an amount.
+
+It should also charge for memory cost by multiplying `memory_pages * memory_cost * amount`, where `memory_cost` is defined by the gas schedule.
 
 **Parameters**
 
--   `amount` **i64** the amount to subtract to the gas counter
+-   `amount` **i64** the amount to reduce the gas left counter with
 
 **Returns**
 
