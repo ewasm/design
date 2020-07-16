@@ -2,6 +2,8 @@
 
 The Ewasm Contract Interface (ECI) specifies the structure of a contract module.
 
+Current revision: see [revision.md](./revision.md).
+
 ### Wire format
 
 Every contract must be stored in the [WebAssembly Binary Encoding](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md) format (in short, Wasm bytecode).
