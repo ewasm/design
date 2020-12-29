@@ -13,7 +13,7 @@ Here are example ewasm contracts comparing the two versions:
 ```
 ;; address 5d48c1018904a172886829bbbd9c6f4a2d06c47b has a balance of 0xde0b6b3a7640000 (1 ETH)
 (module
-  ;; syhchronous getBalance method
+  ;; synchronous getBalance method
   ;; params are addressOffset, resultOffset
   (import  "ethereum" "getBalance"  (func $getBalance (param i32 i32)))
   (memory 1 )
