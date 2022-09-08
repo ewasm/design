@@ -382,4 +382,5 @@ These instructions include:
 - Haswell CPU family (http://ark.intel.com/products/codename/42174/Haswell)
 - Instruction tables by Agner Fog: http://www.agner.org/optimize/instruction_tables.pdf
 - EVM 1.0 gas costs (https://docs.google.com/spreadsheets/d/1m89CVujrQe5LAFJ8-YAUCcNK950dUzMQPMJBxRtGCqs/edit#gid=0)
+- OPCODES FOR THE EVM (https://ethereum.org/en/developers/docs/evm/opcodes/)
 - Warren, Henry S. (2003). Hacker's Delight (1st ed.). Boston, Mass.: Addison-Wesley. ISBN 0-201-91465-4
